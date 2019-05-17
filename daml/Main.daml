@@ -36,6 +36,7 @@ setup = scenario do
         r_type = "gps"
         r_format = "rtps"
         r_nonce = "bits_A"
+        r_digest = "bits_A_0"
         r_checkpoints = []
     exercise edrCid Edr_Record with record
 

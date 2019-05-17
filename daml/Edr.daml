@@ -37,6 +37,7 @@ data Record = Record
     r_type: Text
     r_format: Text
     r_nonce: Text
+    r_digest: Text
     r_checkpoints: [Checkpoint]
   deriving (Eq, Show)
 
@@ -53,6 +54,7 @@ appendCheckpoints record checkpoints =
     r_type = record.r_type
     r_format = record.r_format
     r_nonce = record.r_nonce
+    r_digest = record.r_digest
     r_checkpoints = record.r_checkpoints ++ checkpoints
 
 template EdrRecord
