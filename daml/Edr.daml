@@ -27,8 +27,8 @@ template Edr
 
 data Checkpoint = Checkpoint
   with
-    r_proof: Text
-    r_index: Int
+    c_proof: Text
+    c_index: Int
   deriving (Eq, Show)
 
 data Record = Record
@@ -42,7 +42,7 @@ data Record = Record
 
 checkMonotonic : Record -> [Checkpoint] -> Bool
 checkMonotonic record checkpoints =
--- TODO: check that r_index is monotonic for checkpoints
+-- TODO: check that c_index is monotonic for checkpoints
 -- and that max(record.r_checkpoints) < min(checkpoints)
   True
 

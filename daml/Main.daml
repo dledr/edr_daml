@@ -43,7 +43,7 @@ setup = scenario do
   submit reporter do
     let
       checkpoint = Checkpoint with
-        r_proof = "bits_A_1"
-        r_index = 1
+        c_proof = "bits_A_1"
+        c_index = 1
       checkpoints = [checkpoint]
     exercise edrRecordCid EdrRecord_Append with checkpoints
