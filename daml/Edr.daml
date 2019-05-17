@@ -60,7 +60,7 @@ template EdrRecord
     edr: Edr
     record: Record
   where
-    signatory edr.custodian, edr.owner, edr.reporter
+    signatory edr.owner, edr.reporter
     observer edr.auditors
 
     choice EdrRecord_Append : ContractId EdrRecord
