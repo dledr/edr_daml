@@ -1,0 +1,41 @@
+daml 1.2
+module EdrPending where
+
+import DA.List
+
+import Edr
+
+template EdrPending
+  with
+    edr: Edr
+    alreadySigned: [Party]
+  where
+    signatory alreadySigned
+    observer edr.custodian, edr.owner, edr.reporter
+    ensure
+      -- Can't have duplicate signatories
+      unique alreadySigned
+
+    let
+      signatories = edr.custodian :: edr.owner :: edr.reporter :: []
+      -- Filter alreadySigned parties from those who need toSign
+      toSign = filter (`notElem` alreadySigned) signatories
+      -- Enumerate toRole each signatory is assigned
+      toRole = edr.custodian :: edr.owner :: edr.reporter :: []
+
+    choice EdrPending_Sign : ContractId EdrPending with
+        signer : Party
+      controller signer
+        do
+          -- Check the controller is in both toSign and toRole lists
+          assert (signer `elem` toSign)
+          assert (signer `elem` toRole)
+          create this with alreadySigned = signer :: alreadySigned
+
+    choice EdrPending_Finalize : ContractId Edr with
+        signer : Party
+      controller signer
+        do
+          -- Check that all the required signatories have signed
+          assert (sort alreadySigned == sort signatories)
+          create edr

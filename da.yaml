@@ -1,0 +1,11 @@
+project:
+  sdk-version: 0.12.17
+  scenario: Main:setup
+  name: edr_daml
+  source: daml/Main.daml
+  parties:
+  - Auditor
+  - Custodian
+  - Owner
+  - Reporter
+version: 2

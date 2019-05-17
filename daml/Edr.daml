@@ -1,0 +1,80 @@
+daml 1.2
+module Edr where
+
+import DA.List
+
+type EdrId = ContractId Edr
+
+template Edr
+  with
+    auditors: [Party]
+    custodian: Party
+    owner: Party
+    reporter: Party
+
+  where
+    signatory custodian, owner, reporter
+    observer auditors
+    ensure
+      unique (custodian :: owner :: reporter :: [])
+  
+    controller reporter can
+      nonconsuming Edr_Record : ContractId EdrRecord
+          with
+            record: Record
+          do
+            create EdrRecord with edr = this; record
+
+data Checkpoint = Checkpoint
+  with
+    r_proof: Text
+    r_index: Int
+  deriving (Eq, Show)
+
+data Record = Record
+  with
+    r_name: Text
+    r_type: Text
+    r_format: Text
+    r_nonce: Text
+    r_checkpoints: [Checkpoint]
+  deriving (Eq, Show)
+
+checkMonotonic : Record -> [Checkpoint] -> Bool
+checkMonotonic record checkpoints =
+-- TODO: check that r_index is monotonic for checkpoints
+-- and that max(record.r_checkpoints) < min(checkpoints)
+  True
+
+appendCheckpoints : Record -> [Checkpoint] -> Record
+appendCheckpoints record checkpoints =
+  Record with
+    r_name = record.r_name
+    r_type = record.r_type
+    r_format = record.r_format
+    r_nonce = record.r_nonce
+    r_checkpoints = record.r_checkpoints ++ checkpoints
+
+template EdrRecord
+  with
+    edr: Edr
+    record: Record
+  where
+    signatory edr.custodian, edr.owner, edr.reporter
+    observer edr.auditors
+
+    choice EdrRecord_Append : ContractId EdrRecord
+        with
+          checkpoints: [Checkpoint]
+        controller edr.reporter
+        do
+          let
+            is_valid = checkMonotonic record checkpoints
+            _record = appendCheckpoints record checkpoints
+          assert (is_valid == True)
+          create EdrRecord with edr; record = _record
+
+    choice EdrRecord_Finalize : ()
+      controller edr.owner, edr.reporter 
+        do
+          return ()

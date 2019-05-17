@@ -1,0 +1,49 @@
+daml 1.2
+module Main where
+
+import Edr
+import EdrPending
+
+setup = scenario do
+  auditor <- getParty "Auditor"
+  custodian <- getParty "Custodian"
+  owner <- getParty "Owner"
+  reporter <- getParty "Reporter"
+
+  -- Owner issues pending EDR Contract
+  edrPendingCid <- submit owner do
+    let
+      edr = Edr with
+        auditors = [auditor]
+        custodian = custodian
+        owner = owner
+        reporter = reporter
+    create EdrPending with edr; alreadySigned = [owner]
+  
+  -- Custodian and Reporter accept EDR assignment
+  edrPendingCid <- submit custodian do
+    exercise edrPendingCid EdrPending_Sign with signer = custodian
+  edrPendingCid <- submit reporter do
+    exercise edrPendingCid EdrPending_Sign with signer = reporter
+  edrCid <- submit owner do
+    exercise edrPendingCid EdrPending_Finalize with signer = owner
+
+  -- Reporter creates new record
+  edrRecordCid <- submit reporter do
+    let
+      record = Record with
+        r_name = "/foo"
+        r_type = "gps"
+        r_format = "rtps"
+        r_nonce = "bits_A"
+        r_checkpoints = []
+    exercise edrCid Edr_Record with record
+
+  -- Reporter commits checkpoints to record
+  submit reporter do
+    let
+      checkpoint = Checkpoint with
+        r_proof = "bits_A_1"
+        r_index = 1
+      checkpoints = [checkpoint]
+    exercise edrRecordCid EdrRecord_Append with checkpoints
