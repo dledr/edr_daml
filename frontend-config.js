@@ -195,18 +195,18 @@ export const customViews = (userId, party, role) => ({
         weight: 0,
         alignment: "left"
       },
-      {
-        key: "argument.record.r_checkpoints.c_index",
-        title: "Latest Index",
-        createCell: ({rowData}) => ({
-          type: "text",
-          value: DamlLfValue.toJSON(rowData.argument).record.r_checkpoints[0].c_index
-        }),
-        sortable: true,
-        width: 80,
-        weight: 0,
-        alignment: "left"
-      }
+      // {
+      //   key: "argument.record.r_checkpoints.c_index",
+      //   title: "Latest Index",
+      //   createCell: ({rowData}) => ({
+      //     type: "text",
+      //     value: DamlLfValue.toJSON(rowData.argument).record.r_checkpoints[0].c_index
+      //   }),
+      //   sortable: true,
+      //   width: 80,
+      //   weight: 0,
+      //   alignment: "left"
+      // }
     ]
   },
 })
