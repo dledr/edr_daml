@@ -1,2 +1,2 @@
-# bbr_daml
-Black Block Recorder with DAML | Immutable Logging via Blockchain
+# edr_daml
+Event Data Recorder in DAML | Tamper evident logging via DLT
